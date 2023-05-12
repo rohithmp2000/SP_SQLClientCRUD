@@ -1,0 +1,80 @@
+﻿@page "/editemployee/{id}"
+@using SP_SQLClientCRUD.Models
+@using SP_SQLClientCRUD.Services
+@inject IEmpServices IEmpService
+
+<h3>Edit Employee</h3>
+<hr />
+
+<EditForm OnValidSubmit="@(()=>updateexemp(empSub))" Model="empSub">
+    <DataAnnotationsValidator />
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="form-group">
+                <label for="name" class="control-label">Emp ID</label>
+                <input form="name" class="form-control" @bind-value=@empSub.emp_id readonly />
+            </div>
+            <div class="form-group">
+                <label for="name" class="control-label">Name</label>
+                <input form="name" class="form-control" @bind-value=@empSub.emp_name />
+                <ValidationMessage For="@(()=>emp.emp_name)" />
+            </div>
+            <div class="form-group">
+                <label for="designation" class="control-label">Designation</label>
+                <input form="designation" class="form-control" @bind-value=@empSub.emp_designation />
+                <ValidationMessage For="@(()=>emp.emp_designation)" />
+            </div>
+            <div class="form-group">
+                <label for="salary" class="control-label">Salary</label>
+                <input form="salary" class="form-control" @bind-value=@empSub.emp_salary />
+                <ValidationMessage For="@(()=>emp.emp_salary)" />
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <input type="submit" class="btn btn-success" value="Save" />
+                <input type="button" class="btn btn-danger" onclick="@cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+
+@code {
+
+    [Parameter]
+    public EventCallback<EmpModel> abc { get; set; }
+
+    [Parameter]
+    public EmpModel empSub { get; set; }
+
+    async Task cancel()
+    {
+        await abc.InvokeAsync();
+    }
+
+
+
+
+    [Parameter]
+    public string id { get; set; }
+
+    EmpModel emp = new EmpModel();
+
+
+
+
+    [Parameter]
+    public EventCallback<EmpModel> ValueChanged { get; set; }
+
+    protected async Task updateexemp(EmpModel obj)
+    {
+        IEmpService.UpdateEmployee(obj);
+        Console.WriteLine(obj.emp_name + " enthoo error endaloo mwoneee...");
+        await ValueChanged.InvokeAsync(obj);
+    }
+}

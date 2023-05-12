@@ -1,0 +1,75 @@
+﻿@page "/deleteemployee/{id}"
+@using SP_SQLClientCRUD.Models
+@using SP_SQLClientCRUD.Services
+@inject IEmpServices IEmpService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime
+
+<h3>Delete Employee</h3>
+<hr />
+
+<form>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="for-group">
+                <lable for="id" class="control-label">ID</lable>
+                <label form="id" class="form-control">@emp.emp_id</label>
+            </div>
+            <div class="for-group">
+                <lable for="id" class="control-label">Name</lable>
+                <lable form="id" class="form-control">@emp.emp_name</lable>
+            </div>
+            <div class="for-group">
+                <lable for="id" class="control-label">Designation</lable>
+                <lable form="id" class="form-control">@emp.emp_designation</lable>
+            </div>
+            <div class="for-group">
+                <lable for="id" class="control-label">Salary</lable>
+                <lable form="id" class="form-control">@emp.emp_salary</lable>
+            </div>
+        </div>
+    </div>
+    <br /><br />
+    <div class="row">
+        <div class="clo-md-4">
+            <div class="form-group">
+                <input type="button" class="btn btn-danger" onclick=@delete value="Delete Employee" />&nbsp;&nbsp;
+                <input type="button" class="btn btn-primary" onclick=@cancel value="Cancel" />
+            </div>
+        </div>
+    </div>
+
+</form>
+
+@code {
+
+    [Parameter]
+    public string id { get; set; }
+
+    EmpModel emp = new EmpModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        emp = await Task.Run(() => IEmpService.Readbyid(Convert.ToInt32(id)));
+    }
+
+    protected async Task delete()
+    {
+        // Confirm
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Are you sure, you want to delete " + emp.emp_id.ToString()," - " + emp.emp_name.ToString()," ?");
+        //onclick = "return confirm('Are you sure you want to delete @obj.Id - @obj.Firstname @obj.Lastname ?')"
+        if (confirmed)
+        {
+            IEmpService.DeleteEmployee(emp.emp_id);
+        }
+        NavigationManager.NavigateTo("/allemployees");
+    }
+
+
+
+
+    protected async void cancel()
+    {
+        NavigationManager.NavigateTo("/allemployees");
+    }    
+}

@@ -1,0 +1,134 @@
+﻿@page "/allemployees"
+@using SP_SQLClientCRUD.Models
+@using SP_SQLClientCRUD.Services
+@inject IEmpServices IEmpService
+@inject NavigationManager NavigationManager
+
+
+<h3>All Employees</h3>
+<hr />
+
+<div>
+    <a class="btn btn-primary" @onclick="@createform">Add Employee</a>
+</div>
+<br />
+
+@if (a == true)
+{
+    @if (b == true)
+    {
+        <hr />    
+        <AddEmployee ValueChanged="Addemp" abc="cancel"></AddEmployee>
+        <hr />
+    }
+    @if (c == true)
+    {
+        <hr />
+    <EditEmployee ValueChanged="Updtemp" empSub="d" abc="cancel"></EditEmployee>
+        <hr />
+    }
+}
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Emp Id</th>
+            <th>Name</th>
+            <th>Designation</th>
+            <th>Salary</th>
+            <th colspan="2"><div class="text-center">Actions</div></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var i in emplist)
+        {
+            <tr>
+                <td>@i.emp_id</td>
+                <td>@i.emp_name</td>
+                <td>@i.emp_designation</td>
+                <td>@i.emp_salary</td>
+                <td><div class="text-center"><a @onclick="@(()=>Editform(i))" class="btn btn-warning"><span class="oi oi-pencil"></span>   Edit</a></div></td>
+                <td><div class="text-center"><a @onclick="@(()=>Deleteform(i))" class="btn btn-danger"><span class="oi oi-trash"></span>   Delete</a></div></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+
+    private List<EmpModel> emplist;
+
+    protected override async Task OnInitializedAsync()
+    {
+        emplist = new List<EmpModel>();
+        emplist = await Task.Run(() => IEmpService.GetAllEmployees().ToList());
+    }
+
+
+
+
+
+    public bool b = false;
+    private void createform()
+    {
+        Console.WriteLine("saanam createformil keerind...");
+        a = true;
+        b = true;
+    }           
+
+
+
+    [Parameter]
+    public string id { get; set; }
+    public EmpModel d;
+    public bool c = false;
+
+    private EmpModel Editform(EmpModel i)
+    {
+        Console.WriteLine("saanam editformil keerind...");
+        a = true;
+        b = false;
+        c = true;
+        d = new EmpModel() { emp_id = i.emp_id, emp_name = i.emp_name, emp_designation = i.emp_designation, emp_salary = i.emp_salary };
+        return d;
+    }
+
+
+
+
+    private async Task Addemp(EmpModel empad)
+    {
+        emplist.Add(empad);
+        a = false;
+    }
+
+
+
+
+    private async Task Updtemp(EmpModel empad)
+    {
+        int index =   emplist.FindIndex(x => x.emp_id == empad.emp_id);
+        emplist[index] = empad;
+        c = false;
+    }
+
+
+
+
+    private async Task Deleteform(EmpModel i)
+    {
+        Console.WriteLine(i.emp_name + "deleteformil keerunund...");
+        NavigationManager.NavigateTo($"/deleteemployee/{i.emp_id}");
+    }
+
+
+
+    public bool a = false;
+
+    void cancel()
+    {
+        a = false;
+        b = false;
+        c = false;
+    }
+}

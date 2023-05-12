@@ -1,0 +1,77 @@
+﻿@page "/addemployee"
+@using SP_SQLClientCRUD.Models
+@using SP_SQLClientCRUD.Services
+@inject IEmpServices IEmpService
+@inject NavigationManager NavigationManager
+
+<h3>Add Employee</h3>
+<hr />
+
+<EditForm Model="empSub" OnValidSubmit="@addnewemp">
+    <DataAnnotationsValidator />
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="form-group">
+                <label for="name" class="control-label">Name</label>
+                <input form="name" class="form-control" @bind-value=@empSub.emp_name/>
+                <ValidationMessage For="@(()=>empSub.emp_name)" />
+            </div>
+            <div class="form-group">
+                <label for="designation" class="control-label">Designation</label>
+                <input form="designation" class="form-control" @bind-value=@empSub.emp_designation />
+                <ValidationMessage For="@(()=>empSub.emp_designation)" />
+
+            </div>
+            <div class="form-group">
+                <label for="salary" class="control-label">Salary</label>
+                <input form="salary" class="form-control" @bind-value=@empSub.emp_salary />
+                <ValidationMessage For="@(()=>empSub.emp_salary)" />
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <input type="submit" class="btn btn-success" value="Save" />
+                <input type="button" class="btn btn-danger" onclick="@cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+
+@code {
+
+    [Parameter]
+    public EventCallback<EmpModel> abc { get; set; }
+
+    [Parameter]
+    public EmpModel empSub { get; set; } = new EmpModel();
+
+    async Task cancel()
+    {
+        await abc.InvokeAsync();
+    }
+
+
+
+
+    [Parameter]
+    public EventCallback<EmpModel> ValueChanged { get; set; }
+
+
+
+
+    protected async Task addnewemp()
+    {
+        if(empSub != null)
+        {
+            var result = IEmpService.AddEmployee(empSub);
+            empSub.emp_id = result;
+            await ValueChanged.InvokeAsync(empSub);
+        }
+        empSub = new EmpModel();
+    }
+}
