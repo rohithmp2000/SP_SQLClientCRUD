@@ -1,5 +1,4 @@
 ﻿using SP_SQLClientCRUD.Models;
-using SP_SQLClientCRUD.Pages;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -8,8 +7,6 @@ namespace SP_SQLClientCRUD.Services
     public class EmpServices : IEmpServices 
     {
         string connectionString = string.Empty;
-
-        public List<EmpModel>getbyidcmd;
 
         private readonly IConfiguration configuration;
 
