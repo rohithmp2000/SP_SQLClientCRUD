@@ -49,9 +49,6 @@
     [Parameter]
     public EventCallback<EmpModel> abc { get; set; }
 
-    [Parameter]
-    public EmpModel empSub { get; set; }
-
     async Task cancel()
     {
         await abc.InvokeAsync();
@@ -59,6 +56,9 @@
 
 
 
+
+    [Parameter]
+    public EmpModel empSub { get; set; }
 
     [Parameter]
     public string id { get; set; }
